@@ -12,6 +12,9 @@ type
         claims*: TableRef[string, Claim]
         signature*: string
 
+export claims
+export jose
+
 
 proc splitToken(s: string): seq[string] =
     let parts = s.split(".")
@@ -29,10 +32,20 @@ proc toJWT*(s: string): JWT =
       signature = decodeUrlSafe(parts[2])
 
     result = JWT(
-        header: headerNode.toHeaders(),
+        header: headerNode.toHeader(),
         claims: payloadNode.toClaims(),
         signature: signature
     )
+
+
+proc toJWT*(node: JsonNode): JWT =
+  let claims = node["claims"].toClaims
+  let header = node["header"].toHeader
+
+  JWT(
+    claims: claims,
+    header: header
+  )
 
 
 # Encodes the raw signature hex to b64url

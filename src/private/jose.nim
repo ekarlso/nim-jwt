@@ -3,8 +3,8 @@ import json, strutils, tables
 import utils
 
 type
-    CryptoException = object of Exception
-    UnsupportedAlgorithm = object of CryptoException
+    CryptoException* = object of Exception
+    UnsupportedAlgorithm* = object of CryptoException
 
     SignatureAlgorithm* = enum
         NONE = "NONE"
@@ -22,7 +22,7 @@ proc strToSignatureAlgorithm(s: string): SignatureAlgorithm =
         raise newException(UnsupportedAlgorithm, "$# isn't supported" % s)
 
 
-proc toHeaders*(j: JsonNode): JOSEHeader =
+proc toHeader*(j: JsonNode): JOSEHeader =
     let algStr = j["alg"].str
     let algo = strToSignatureAlgorithm(algStr)
 
@@ -63,5 +63,5 @@ when isMainModule:
         assert sigAsJSON == v[1]
 
     let i = %{"alg": %"HS256", "typ": %"JWT"}
-    let header = i.toJOSEHeader
+    let header = i.toHeader
     assert (%header == i)
