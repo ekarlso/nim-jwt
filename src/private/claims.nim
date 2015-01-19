@@ -17,8 +17,8 @@ type
 
     Claim* = ref ClaimObj
     ClaimObj* {.acyclic.} = object
-        node: JsonNode
-        kind: ClaimKind
+        node*: JsonNode
+        kind*: ClaimKind
 
 
 
