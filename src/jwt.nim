@@ -72,9 +72,14 @@ proc verify*(token: JWT, secret: var string): bool =
   result = token.signature == signature
 
 
-proc `$`*(token: JWT): string =
+proc toString*(token: JWT): string =
   result = token.header.toBase64 & "." & token.claims.toBase64 & "." & token.signatureToB64
 
+proc `$`*(token: JWT): string =
+  token.toString
+
+proc `%`*(token: JWT): JsonNode =
+  $token
 
 when isMainModule:
     # Load a token from json
