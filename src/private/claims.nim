@@ -22,7 +22,7 @@ type
 
 
 
-proc newClaims(claims: varargs[tuple[key: string, val: Claim]]): TableRef[string, Claim] =
+proc newClaims*(claims: varargs[tuple[key: string, val: Claim]]): TableRef[string, Claim] =
     result = newTable[string, Claim](claims)
 
 
