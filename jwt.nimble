@@ -5,7 +5,6 @@ author        = "Endre Karlson"
 description   = "JSON Web Tokens for Nim"
 license       = "MIT"
 
-#bin = "nimble"
 srcDir = "src"
 
 [Deps]
