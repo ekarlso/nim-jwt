@@ -1,11 +1,11 @@
-import future, json, strutils, tables
+import future, json, strutils, tables, times
 
 from private/hmac import nil
 
 import private/claims, private/jose, private/utils
 
 type
-    InvalidToken = object of Exception
+    InvalidToken* = object of Exception
 
     JWT* = object
         headerB64: string
@@ -106,32 +106,16 @@ proc `%`*(token: JWT): JsonNode =
   let s = $token
   %s
 
+proc verifyTimeClaims*(token: JWT) =
+  let now = getTime()
+  if token.claims.hasKey("nbf"):
+    let nbf = token.claims["nbf"].getClaimTime
+    if now < nbf:
+      raise newException(InvalidToken, "Token cant be used yet")
 
-when isMainModule:
-    # Load a token from json
-    let
-      claimsJson = %{
-        "iss": %"jane",
-        "sub": %"john",
-        "nbf": %1234,
-        "iat": %1234,
-        "exp": %1234,
-        "jti": %"token-id",
-        "foo": %{"bar": %1}
-      }
-      headerJson = %{"alg": %"HS256", "typ": %"JWT"}
+  if token.claims.hasKey("exp"):
+    let exp = token.claims["exp"].getClaimTime
+    if now > exp :
+      raise newException(InvalidToken, "Token is expired")
 
-    # Load it as JWT
-    var
-      token = JWT(
-        claims: claimsJson.toClaims,
-        header: headerJson.toHeader
-      )
-      secret = "secret"
-
-    # Sign and verify
-    token.sign(secret)
-
-    let b64Token = $token
-    token = b64Token.toJWT
-    assert token.verify(secret) == true
+  # Verify token nbf exp

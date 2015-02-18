@@ -50,18 +50,3 @@ proc `%`*(h: JOSEHeader): JsonNode =
 proc toBase64*(h: JOSEHeader): string =
     let asJson = %h
     result = encodeUrlSafe($asJson)
-
-
-when isMainModule:
-    let algTests = @[
-        (NONE, %"NONE"),
-        (HS256, %"HS256")
-    ]
-
-    for i, v in algTests:
-        let sigAsJSON = %v[0]
-        assert sigAsJSON == v[1]
-
-    let i = %{"alg": %"HS256", "typ": %"JWT"}
-    let header = i.toHeader
-    assert (%header == i)

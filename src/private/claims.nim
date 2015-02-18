@@ -69,6 +69,10 @@ proc newTimeClaim*(k: ClaimKind, s: string): Claim =
 proc newTimeClaim*(k: ClaimKind, i: int64): Claim =
     return newTimeClaim(k, %i)
 
+# Returns the claimKeyms value as a time
+proc getClaimTime*(c: Claim): Time =
+  result = fromSeconds(c.node.num)
+
 # NBF
 proc newNBF*(s: string): Claim = return newTimeClaim(NBF, s)
 
@@ -135,21 +139,3 @@ proc `%`*(claims: TableRef[string, Claim]): JsonNode =
 proc toBase64*(claims: TableRef[string, Claim]): string =
     let asJson = %claims
     result = encodeUrlSafe($asJson)
-
-
-when isMainModule:
-    let asJson = %{
-        "iss": %"jane",
-        "sub": %"john",
-        "nbf": %1234,
-        "iat": %1234,
-        "exp": %1234,
-        "jti": %"token-id",
-        "foo": %{"bar": %1}
-    }
-    let claims = asJson.toClaims
-    let toJson = %claims
-
-    assert asJson.len == toJson.len
-    for k, v in asJson:
-        assert v == toJson[k]
